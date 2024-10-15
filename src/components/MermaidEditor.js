@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import mermaid from 'mermaid';
 import Header from './Header';
 import CollapsibleMenu from './CollapsibleMenu';
@@ -41,6 +41,8 @@ const MermaidEditor = () => {
     const [solutionZoomLevel, setSolutionZoomLevel] = useState(1);
     const [isMenuOpen, setIsMenuOpen] = useState(true);
     const [markdownContent, setMarkdownContent] = useState('');
+    const [diagramKey, setDiagramKey] = useState(0);
+    const diagramRef = useRef(null);
 
     useEffect(() => {
         mermaid.initialize({
@@ -136,6 +138,7 @@ const MermaidEditor = () => {
     };
 
     const showSolution = () => {
+        console.log("Showing solution");
         // This is where you'd set your pre-written solution code
         const solution = `classDiagram
     class Animal {
@@ -159,7 +162,10 @@ const MermaidEditor = () => {
     };
 
     const handleSolutionClose = () => {
+        console.log("Closing solution");
         setShowSolutionForm(false);
+        // Force re-render of the diagram
+        setDiagramKey(prevKey => prevKey + 1);
     };
 
     const toggleSolutionDiagramExpansion = () => {
@@ -225,7 +231,13 @@ const MermaidEditor = () => {
                                 </div>
                             </div>
                             <div className="flex-1 overflow-auto p-4">
-                                <MermaidDiagram code={code} zoomLevel={zoomLevel} setZoomLevel={setZoomLevel} />
+                                <MermaidDiagram
+                                    key={diagramKey}
+                                    code={code}
+                                    zoomLevel={zoomLevel}
+                                    setZoomLevel={setZoomLevel}
+                                    ref={diagramRef}
+                                />
                             </div>
                         </div>
                     </Panel>
