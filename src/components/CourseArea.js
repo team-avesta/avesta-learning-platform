@@ -1,30 +1,18 @@
-import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import React from 'react';
+import { useParams, useLocation } from 'react-router-dom';
 import MermaidEditor from './MermaidEditor';
 
 const CourseArea = () => {
-    const { moduleId, lessonId } = useParams();
-    const [lessonTitle, setLessonTitle] = useState('Lesson Content');
+    const location = useLocation();
+    const { lessonTitle, markdownPath } = location.state || {};
 
-    useEffect(() => {
-        const fetchLessonTitle = async () => {
-            try {
-                const response = await fetch('/mock/oops-course-structure.json');
-                const data = await response.json();
-                const module = data.modules[moduleId];
-                const lesson = module.lessons[lessonId];
-                setLessonTitle(lesson.title);
-            } catch (error) {
-                console.error('Error fetching lesson title:', error);
-            }
-        };
-
-        fetchLessonTitle();
-    }, [moduleId, lessonId]);
+    console.log('CourseArea state:', location.state); // Add this line
+    console.log('Lesson title:', lessonTitle); // Add this line
+    console.log('Markdown path:', markdownPath); // Add this line
 
     return (
         <div className="h-full">
-            <MermaidEditor lessonTitle={lessonTitle} />
+            <MermaidEditor lessonTitle={lessonTitle || 'Lesson Content'} markdownPath={markdownPath || ''} />
         </div>
     );
 };

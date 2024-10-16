@@ -52,7 +52,17 @@ const CourseStructure = ({ isOpen, onToggle }) => {
     };
 
     const handleLessonClick = (moduleIndex, lessonIndex) => {
-        navigate(`/course/${moduleIndex}/${lessonIndex}`);
+        if (courseStructure) {
+            const lesson = courseStructure.modules[moduleIndex].lessons[lessonIndex];
+            console.log('Lesson clicked:', lesson);
+            console.log('Markdown path:', lesson.markdownPath);
+            navigate(`/course/${moduleIndex}/${lessonIndex}`, {
+                state: {
+                    lessonTitle: lesson.title,
+                    markdownPath: lesson.markdownPath
+                }
+            });
+        }
     };
 
     const courses = [

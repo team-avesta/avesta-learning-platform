@@ -10,7 +10,9 @@ import SolutionModal from './SolutionModal';
 import { FaSearch, FaSearchMinus, FaSearchPlus } from 'react-icons/fa';
 import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels';
 
-const MermaidEditor = ({ lessonTitle }) => {
+const MermaidEditor = ({ lessonTitle, markdownPath }) => {
+    console.log('MermaidEditor props:', { lessonTitle, markdownPath });
+
     const [code, setCode] = useState(`classDiagram
     class Animal {
         +String names
@@ -39,6 +41,7 @@ const MermaidEditor = ({ lessonTitle }) => {
     const [solutionZoomLevel, setSolutionZoomLevel] = useState(1);
     const [isMenuOpen, setIsMenuOpen] = useState(true);
     const [markdownContent, setMarkdownContent] = useState('');
+    const [markdownError, setMarkdownError] = useState(null);
     const [diagramKey, setDiagramKey] = useState(0);
     const diagramRef = useRef(null);
 
@@ -68,14 +71,32 @@ const MermaidEditor = ({ lessonTitle }) => {
     Animal <|-- Cat`);
 
         // Load markdown content
-        fetch('/markdown/lesson.md')
-            .then(response => response.text())
-            .then(text => {
-                console.log('Loaded markdown content:', text); // For debugging
-                setMarkdownContent(text);
-            })
-            .catch(error => console.error('Error loading markdown:', error));
-    }, []);
+        if (markdownPath) {
+            // Ensure the markdownPath is treated as an absolute path
+            const absoluteMarkdownPath = markdownPath.startsWith('/') ? markdownPath : `/${markdownPath}`;
+
+            fetch(absoluteMarkdownPath)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Failed to load lesson content');
+                    }
+                    return response.text();
+                })
+                .then(text => {
+                    console.log('Loaded markdown content:', text); // For debugging
+                    setMarkdownContent(text);
+                    setMarkdownError(null);
+                })
+                .catch(error => {
+                    console.error('Error loading markdown:', error);
+                    setMarkdownError('Failed to load lesson content. Please try again later.');
+                    setMarkdownContent('');
+                });
+        } else {
+            setMarkdownContent('');
+            setMarkdownError('No lesson content available.');
+        }
+    }, [markdownPath]);
 
     const handleCodeChange = (value) => {
         setCode(value);
@@ -192,7 +213,11 @@ const MermaidEditor = ({ lessonTitle }) => {
                             <h2 className="text-xl font-bold text-gray-800">{lessonTitle}</h2>
                         </div>
                         <div className="flex-1 overflow-auto p-4">
-                            <MarkdownRenderer content={markdownContent} />
+                            {markdownError ? (
+                                <div className="text-red-500">{markdownError}</div>
+                            ) : (
+                                <MarkdownRenderer content={markdownContent} />
+                            )}
                         </div>
                     </div>
                 </Panel>
