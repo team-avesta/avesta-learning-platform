@@ -2,30 +2,30 @@
     "course": "OOP Design",
     "modules": [
         {
-            "title": "Introduction to Object-Oriented Programming (Beginner)",
+            "title": "Introduction to Object-Oriented Programming",
             "lessons": [
                 {
-                    "title": "Lesson 1: Encapsulation and Abstraction (Beginner)",
+                    "title": "Lesson 1: Encapsulation and Abstraction",
                     "filePath": "markdown/oops/lesson-1.md"
                 },
                 {
-                    "title": "Lesson 2: Inheritance (Beginner)",
+                    "title": "Lesson 2: Inheritance",
                     "filePath": "markdown/oops/lesson-2.md"
                 },
                 {
-                    "title": "Lesson 3: Polymorphism (Beginner)",
+                    "title": "Lesson 3: Polymorphism",
                     "filePath": "markdown/oops/lesson-3.md"
                 },
                 {
-                    "title": "Lesson 4: Classes and Objects (Beginner)",
+                    "title": "Lesson 4: Classes and Objects",
                     "filePath": "markdown/oops/lesson-4.md"
                 },
                 {
-                    "title": "Lesson 5: Class Members (Attributes and Methods) (Beginner)",
+                    "title": "Lesson 5: Class Members (Attributes and Methods)",
                     "filePath": "markdown/oops/lesson-5.md"
                 },
                 {
-                    "title": "Lesson 6: Constructors and Destructors (Beginner)",
+                    "title": "Lesson 6: Constructors and Destructors",
                     "filePath": "markdown/oops/lesson-6.md"
                 }
             ]

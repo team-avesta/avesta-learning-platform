@@ -10,7 +10,7 @@ import SolutionModal from './SolutionModal';
 import { FaSearch, FaSearchMinus, FaSearchPlus } from 'react-icons/fa';
 import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels';
 
-const MermaidEditor = () => {
+const MermaidEditor = ({ lessonTitle }) => {
     const [code, setCode] = useState(`classDiagram
     class Animal {
         +String names
@@ -189,7 +189,7 @@ const MermaidEditor = () => {
                 <Panel defaultSize={40} minSize={20}>
                     <div className="h-full flex flex-col">
                         <div className="h-12 flex items-center px-4 bg-gray-100 border-b border-gray-300">
-                            <h2 className="text-xl font-bold text-gray-800">Lesson Content</h2>
+                            <h2 className="text-xl font-bold text-gray-800">{lessonTitle}</h2>
                         </div>
                         <div className="flex-1 overflow-auto p-4">
                             <MarkdownRenderer content={markdownContent} />
