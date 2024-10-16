@@ -44,4 +44,3 @@ Here is the JSON file for the course structure:
   ]     
 }   
 ```
-

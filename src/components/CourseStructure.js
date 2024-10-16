@@ -13,6 +13,7 @@ import {
     FaLightbulb,
     FaBook
 } from 'react-icons/fa';
+import { useNavigate } from 'react-router-dom';
 
 const CourseCard = ({ title, icon, isSelected, onClick }) => (
     <div
@@ -27,6 +28,7 @@ const CourseCard = ({ title, icon, isSelected, onClick }) => (
 );
 
 const CourseStructure = ({ isOpen, onToggle }) => {
+    const navigate = useNavigate();
     const [expandedModules, setExpandedModules] = useState({});
     const [selectedCourse, setSelectedCourse] = useState('OOP Design');
     const [courseStructure, setCourseStructure] = useState(null);
@@ -47,6 +49,10 @@ const CourseStructure = ({ isOpen, onToggle }) => {
 
     const toggleModule = (moduleId) => {
         setExpandedModules(prev => ({ ...prev, [moduleId]: !prev[moduleId] }));
+    };
+
+    const handleLessonClick = (moduleIndex, lessonIndex) => {
+        navigate(`/course/${moduleIndex}/${lessonIndex}`);
     };
 
     const courses = [
@@ -100,7 +106,11 @@ const CourseStructure = ({ isOpen, onToggle }) => {
                                 {expandedModules[moduleIndex] && (
                                     <ul className="pl-4 mt-1">
                                         {module.lessons.map((lesson, lessonIndex) => (
-                                            <li key={lessonIndex} className="hover:bg-blue-500 p-1 rounded flex items-center">
+                                            <li
+                                                key={lessonIndex}
+                                                className="hover:bg-blue-500 p-1 rounded flex items-center cursor-pointer"
+                                                onClick={() => handleLessonClick(moduleIndex, lessonIndex)}
+                                            >
                                                 <FaBook className="text-green-300 mr-2" />
                                                 {lesson.title}
                                             </li>
