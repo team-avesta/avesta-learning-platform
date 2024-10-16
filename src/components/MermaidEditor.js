@@ -1,7 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
 import mermaid from 'mermaid';
-import Header from './Header';
-import CollapsibleMenu from './CollapsibleMenu';
 import ClassForm from './ClassForm';
 import InterfaceForm from './InterfaceForm';
 import RelationshipForm from './RelationshipForm';
@@ -185,64 +183,61 @@ const MermaidEditor = () => {
     const resetZoom = () => setZoomLevel(1);
 
     return (
-        <div className="flex flex-col h-screen bg-white text-gray-800">
-            <Header title="Diagram Editor" />
-            <div className="flex flex-1 overflow-hidden">
-                <CollapsibleMenu />
-                {/* Main Content */}
-                <PanelGroup direction="horizontal" className="flex-1">
-                    <Panel defaultSize={40} minSize={20}>
-                        <div className="h-full flex flex-col">
-                            <div className="h-12 flex items-center px-4 bg-gray-100 border-b border-gray-300">
-                                <h2 className="text-xl font-bold text-gray-800">Lesson Content</h2>
-                            </div>
-                            <div className="flex-1 overflow-auto p-4">
-                                <MarkdownRenderer content={markdownContent} />
+        <div className="flex flex-col h-full">
+            {/* Main Content */}
+            <PanelGroup direction="horizontal" className="flex-1">
+                <Panel defaultSize={40} minSize={20}>
+                    <div className="h-full flex flex-col">
+                        <div className="h-12 flex items-center px-4 bg-gray-100 border-b border-gray-300">
+                            <h2 className="text-xl font-bold text-gray-800">Lesson Content</h2>
+                        </div>
+                        <div className="flex-1 overflow-auto p-4">
+                            <MarkdownRenderer content={markdownContent} />
+                        </div>
+                    </div>
+                </Panel>
+                <PanelResizeHandle className="w-1 bg-gray-300 cursor-col-resize z-10" />
+                <Panel defaultSize={20} minSize={15}>
+                    <MermaidCodeEditor
+                        code={code}
+                        onChange={handleCodeChange}
+                        onAddClass={addClass}
+                        onAddInterface={addInterface}
+                        onAddRelationship={addRelationship}
+                        onShowSolution={showSolution}
+                        solutionCode={solutionCode}
+                    />
+                </Panel>
+                <PanelResizeHandle className="w-1 bg-gray-300 cursor-col-resize z-10" />
+                <Panel defaultSize={40} minSize={20}>
+                    <div className="h-full flex flex-col">
+                        <div className="h-12 flex items-center justify-between px-4 bg-gray-100 border-b border-gray-300">
+                            <h2 className="text-xl font-bold text-gray-800">Diagram</h2>
+                            <div className="flex space-x-1">
+                                <button onClick={zoomIn} className="text-gray-700 hover:bg-gray-200 p-2 rounded-l-md transition-colors duration-200 focus:outline-none" title="Zoom In">
+                                    <FaSearchPlus />
+                                </button>
+                                <button onClick={resetZoom} className="text-gray-700 hover:bg-gray-200 p-2 transition-colors duration-200 focus:outline-none" title="Reset Zoom">
+                                    <FaSearch />
+                                </button>
+                                <button onClick={zoomOut} className="text-gray-700 hover:bg-gray-200 p-2 rounded-r-md transition-colors duration-200 focus:outline-none" title="Zoom Out">
+                                    <FaSearchMinus />
+                                </button>
                             </div>
                         </div>
-                    </Panel>
-                    <PanelResizeHandle className="w-1 bg-gray-300 cursor-col-resize z-10" />
-                    <Panel defaultSize={20} minSize={15}>
-                        <MermaidCodeEditor
-                            code={code}
-                            onChange={handleCodeChange}
-                            onAddClass={addClass}
-                            onAddInterface={addInterface}
-                            onAddRelationship={addRelationship}
-                            onShowSolution={showSolution}
-                            solutionCode={solutionCode}
-                        />
-                    </Panel>
-                    <PanelResizeHandle className="w-1 bg-gray-300 cursor-col-resize z-10" />
-                    <Panel defaultSize={40} minSize={20}>
-                        <div className="h-full flex flex-col">
-                            <div className="h-12 flex items-center justify-between px-4 bg-gray-100 border-b border-gray-300">
-                                <h2 className="text-xl font-bold text-gray-800">Diagram</h2>
-                                <div className="flex space-x-1">
-                                    <button onClick={zoomIn} className="text-gray-700 hover:bg-gray-200 p-2 rounded-l-md transition-colors duration-200 focus:outline-none" title="Zoom In">
-                                        <FaSearchPlus />
-                                    </button>
-                                    <button onClick={resetZoom} className="text-gray-700 hover:bg-gray-200 p-2 transition-colors duration-200 focus:outline-none" title="Reset Zoom">
-                                        <FaSearch />
-                                    </button>
-                                    <button onClick={zoomOut} className="text-gray-700 hover:bg-gray-200 p-2 rounded-r-md transition-colors duration-200 focus:outline-none" title="Zoom Out">
-                                        <FaSearchMinus />
-                                    </button>
-                                </div>
-                            </div>
-                            <div className="flex-1 overflow-auto p-4">
-                                <MermaidDiagram
-                                    key={diagramKey}
-                                    code={code}
-                                    zoomLevel={zoomLevel}
-                                    setZoomLevel={setZoomLevel}
-                                    ref={diagramRef}
-                                />
-                            </div>
+                        <div className="flex-1 overflow-auto p-4">
+                            <MermaidDiagram
+                                key={diagramKey}
+                                code={code}
+                                zoomLevel={zoomLevel}
+                                setZoomLevel={setZoomLevel}
+                                ref={diagramRef}
+                            />
                         </div>
-                    </Panel>
-                </PanelGroup>
-            </div>
+                    </div>
+                </Panel>
+            </PanelGroup>
+            {/* Keep the modal components */}
             {showClassForm && (
                 <div className="absolute inset-0 z-50">
                     <ClassForm
