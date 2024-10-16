@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     FaChevronLeft,
     FaGraduationCap,
@@ -29,6 +29,21 @@ const CourseCard = ({ title, icon, isSelected, onClick }) => (
 const CourseStructure = ({ isOpen, onToggle }) => {
     const [expandedModules, setExpandedModules] = useState({});
     const [selectedCourse, setSelectedCourse] = useState('OOP Design');
+    const [courseStructure, setCourseStructure] = useState(null);
+
+    useEffect(() => {
+        const fetchCourseStructure = async () => {
+            try {
+                const response = await fetch('/mock/oops-course-structure.json');
+                const data = await response.json();
+                setCourseStructure(data);
+            } catch (error) {
+                console.error('Error fetching course structure:', error);
+            }
+        };
+
+        fetchCourseStructure();
+    }, []);
 
     const toggleModule = (moduleId) => {
         setExpandedModules(prev => ({ ...prev, [moduleId]: !prev[moduleId] }));
@@ -42,24 +57,6 @@ const CourseStructure = ({ isOpen, onToggle }) => {
         { title: 'Security Design', icon: <FaLock className="text-2xl" /> },
         { title: 'Mobile App Design', icon: <FaMobileAlt className="text-2xl" /> },
     ];
-
-    const courseStructures = {
-        'OOP Design': [
-            {
-                id: 1,
-                name: "Module 1: Introduction to Object-Oriented Programming",
-                icon: <FaLightbulb className="text-yellow-300 mr-2" />,
-                lessons: [
-                    { name: "Lesson 1: What is OOP?", icon: <FaBook className="text-green-300 mr-2" /> },
-                    { name: "Lesson 2: The Four Pillars of OOP", icon: <FaBook className="text-green-300 mr-2" /> },
-                    { name: "Lesson 3: Classes and Objects", icon: <FaBook className="text-green-300 mr-2" /> },
-                    { name: "Lesson 4: Constructors and Destructors", icon: <FaBook className="text-green-300 mr-2" /> }
-                ]
-            },
-            // ... (other modules)
-        ],
-        // ... (other course structures)
-    };
 
     if (!isOpen) return null;
 
@@ -86,30 +83,34 @@ const CourseStructure = ({ isOpen, onToggle }) => {
                         />
                     ))}
                 </div>
-                {courseStructures[selectedCourse].map((module) => (
-                    <div key={module.id} className="mb-2">
-                        <div
-                            className="flex justify-between items-center cursor-pointer hover:bg-blue-500 p-1 rounded"
-                            onClick={() => toggleModule(module.id)}
-                        >
-                            <span className="flex items-center">
-                                {module.icon}
-                                {module.name}
-                            </span>
-                            {expandedModules[module.id] ? <FaChevronDown /> : <FaChevronRight />}
-                        </div>
-                        {expandedModules[module.id] && (
-                            <ul className="pl-4 mt-1">
-                                {module.lessons.map((lesson, index) => (
-                                    <li key={index} className="hover:bg-blue-500 p-1 rounded flex items-center">
-                                        {lesson.icon}
-                                        {lesson.name}
-                                    </li>
-                                ))}
-                            </ul>
-                        )}
+                {courseStructure && selectedCourse === 'OOP Design' && (
+                    <div>
+                        {courseStructure.modules.map((module, moduleIndex) => (
+                            <div key={moduleIndex} className="mb-2">
+                                <div
+                                    className="flex justify-between items-center cursor-pointer hover:bg-blue-500 p-1 rounded"
+                                    onClick={() => toggleModule(moduleIndex)}
+                                >
+                                    <span className="flex items-center">
+                                        <FaLightbulb className="text-yellow-300 mr-2" />
+                                        {module.title}
+                                    </span>
+                                    {expandedModules[moduleIndex] ? <FaChevronDown /> : <FaChevronRight />}
+                                </div>
+                                {expandedModules[moduleIndex] && (
+                                    <ul className="pl-4 mt-1">
+                                        {module.lessons.map((lesson, lessonIndex) => (
+                                            <li key={lessonIndex} className="hover:bg-blue-500 p-1 rounded flex items-center">
+                                                <FaBook className="text-green-300 mr-2" />
+                                                {lesson.title}
+                                            </li>
+                                        ))}
+                                    </ul>
+                                )}
+                            </div>
+                        ))}
                     </div>
-                ))}
+                )}
             </div>
         </div>
     );
