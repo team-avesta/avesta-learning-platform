@@ -40,11 +40,40 @@ const AccordionItem = ({ title, content, isOpen, onToggle, isExercise, onStartEx
     );
 };
 
+const ConfirmationModal = ({ isOpen, onClose, onConfirm, exerciseTitle }) => {
+    if (!isOpen) return null;
+
+    return (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+            <div className="bg-white p-6 rounded-lg shadow-xl">
+                <h3 className="text-lg font-bold mb-4">Start Exercise</h3>
+                <p className="mb-4">Are you ready to start "{exerciseTitle}"?</p>
+                <div className="flex justify-end space-x-2">
+                    <button
+                        onClick={onClose}
+                        className="px-4 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400"
+                    >
+                        Cancel
+                    </button>
+                    <button
+                        onClick={onConfirm}
+                        className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+                    >
+                        Start
+                    </button>
+                </div>
+            </div>
+        </div>
+    );
+};
+
 const LessonContentPanel = ({ lessonTitle, markdownPath, exercises = [], onStartExercise }) => {
     const [lessonContent, setLessonContent] = useState('');
     const [exerciseContents, setExerciseContents] = useState([]);
     const [openAccordionIndex, setOpenAccordionIndex] = useState(0);
     const [markdownError, setMarkdownError] = useState(null);
+    const [showConfirmation, setShowConfirmation] = useState(false);
+    const [selectedExerciseIndex, setSelectedExerciseIndex] = useState(null);
 
     useEffect(() => {
         const fetchContent = async (path) => {
@@ -85,6 +114,13 @@ const LessonContentPanel = ({ lessonTitle, markdownPath, exercises = [], onStart
     }, [markdownPath, exercises]);
 
     const handleStartExercise = async (index) => {
+        setSelectedExerciseIndex(index);
+        setShowConfirmation(true);
+    };
+
+    const confirmStartExercise = async () => {
+        setShowConfirmation(false);
+        const index = selectedExerciseIndex;
         console.log(`Starting exercise ${index + 1}`);
         const exercise = exercises[index];
         if (exercise && exercise.solution) {
@@ -92,13 +128,11 @@ const LessonContentPanel = ({ lessonTitle, markdownPath, exercises = [], onStart
                 const absoluteSolutionPath = exercise.solution.startsWith('/') ? exercise.solution : `/${exercise.solution}`;
                 const solutionContent = await fetch(absoluteSolutionPath).then(res => res.text());
 
-                // Try to match Mermaid code with or without the ```mermaid wrapper
                 const mermaidCodeMatch = solutionContent.match(/```mermaid\s*([\s\S]*?)\s*```/) || solutionContent.match(/classDiagram\s*([\s\S]*)/);
 
                 if (mermaidCodeMatch) {
                     let mermaidCode = mermaidCodeMatch[1].trim();
 
-                    // If the code doesn't start with 'classDiagram', add it
                     if (!mermaidCode.startsWith('classDiagram')) {
                         mermaidCode = 'classDiagram\n' + mermaidCode;
                     }
@@ -146,6 +180,12 @@ const LessonContentPanel = ({ lessonTitle, markdownPath, exercises = [], onStart
                     </div>
                 )}
             </div>
+            <ConfirmationModal
+                isOpen={showConfirmation}
+                onClose={() => setShowConfirmation(false)}
+                onConfirm={confirmStartExercise}
+                exerciseTitle={exercises[selectedExerciseIndex]?.title || `Exercise ${selectedExerciseIndex + 1}`}
+            />
         </div>
     );
 };
