@@ -138,6 +138,9 @@ const LessonContentPanel = ({ lessonTitle, markdownPath, exercises = [], onStart
                     }
 
                     onStartExercise(mermaidCode, index);
+
+                    // Toggle the exercise accordion panel
+                    setOpenAccordionIndex(index + 1);
                 } else {
                     console.error('No Mermaid code found in the solution file');
                 }
