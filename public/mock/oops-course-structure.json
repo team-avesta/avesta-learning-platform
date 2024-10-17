@@ -2,31 +2,92 @@
     "course": "OOP Design",
     "modules": [
         {
+            "id": "1",
             "title": "Introduction to Object-Oriented Programming",
             "lessons": [
                 {
+                    "id": "1",
                     "title": "Lesson 1: Encapsulation and Abstraction",
-                    "markdownPath": "markdown/oops/lesson-1.md"
+                    "markdownPath": "markdown/oops/lesson-1.md",
+                    "exercises": [
+                        {
+                            "id": "1",
+                            "title": "Exercise 1: Encapsulation",
+                            "markdownPath": "markdown/oops/lesson-1-exercise-1.md",
+                            "solution": "markdown/oops/lesson-1-solution-1.md"
+                        },
+                        {
+                            "id": "2",
+                            "title": "Exercise 2: Abstraction",
+                            "markdownPath": "markdown/oops/lesson-1-exercise-2.md",
+                            "solution": "markdown/oops/lesson-1-solution-2.md"
+                        }
+                    ]
                 },
                 {
+                    "id": "2",
                     "title": "Lesson 2: Inheritance",
-                    "markdownPath": "markdown/oops/lesson-2.md"
+                    "markdownPath": "markdown/oops/lesson-2.md",
+                    "exercises": [
+                        {
+                            "id": "3",
+                            "title": "Exercise 1: Inheritance",
+                            "markdownPath": "markdown/oops/lesson-2-exercise-1.md",
+                            "solution": "markdown/oops/lesson-2-solution-1.md"
+                        }
+                    ]
                 },
                 {
+                    "id": "3",
                     "title": "Lesson 3: Polymorphism",
-                    "markdownPath": "markdown/oops/lesson-3.md"
+                    "markdownPath": "markdown/oops/lesson-3.md",
+                    "exercises": [
+                        {
+                            "id": "4",
+                            "title": "Exercise 1: Polymorphism",
+                            "markdownPath": "markdown/oops/lesson-3-exercise-1.md",
+                            "solution": "markdown/oops/lesson-3-solution-1.md"
+                        }
+                    ]
                 },
                 {
+                    "id": "4",
                     "title": "Lesson 4: Classes and Objects",
-                    "markdownPath": "markdown/oops/lesson-4.md"
+                    "markdownPath": "markdown/oops/lesson-4.md",
+                    "exercises": [
+                        {
+                            "id": "5",
+                            "title": "Exercise 1: Classes and Objects",
+                            "markdownPath": "markdown/oops/lesson-4-exercise-1.md",
+                            "solution": "markdown/oops/lesson-4-solution-1.md"
+                        }
+                    ]
                 },
                 {
+                    "id": "5",
                     "title": "Lesson 5: Class Members (Attributes and Methods)",
-                    "markdownPath": "markdown/oops/lesson-5.md"
+                    "markdownPath": "markdown/oops/lesson-5.md",
+                    "exercises": [
+                        {
+                            "id": "6",
+                            "title": "Exercise 1: Class Members",
+                            "markdownPath": "markdown/oops/lesson-5-exercise-1.md",
+                            "solution": "markdown/oops/lesson-5-solution-1.md"
+                        }
+                    ]
                 },
                 {
+                    "id": "6",
                     "title": "Lesson 6: Constructors and Destructors",
-                    "markdownPath": "markdown/oops/lesson-6.md"
+                    "markdownPath": "markdown/oops/lesson-6.md",
+                    "exercises": [
+                        {
+                            "id": "7",
+                            "title": "Exercise 1: Constructors and Destructors",
+                            "markdownPath": "markdown/oops/lesson-6-exercise-1.md",
+                            "solution": "markdown/oops/lesson-6-solution-1.md"
+                        }
+                    ]
                 }
             ]
         }

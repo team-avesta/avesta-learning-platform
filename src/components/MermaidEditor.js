@@ -3,14 +3,14 @@ import mermaid from 'mermaid';
 import ClassForm from './ClassForm';
 import InterfaceForm from './InterfaceForm';
 import RelationshipForm from './RelationshipForm';
-import MarkdownRenderer from './MarkdownRenderer';
 import MermaidDiagram from './MermaidDiagram';
 import MermaidCodeEditor from './MermaidCodeEditor';
 import SolutionModal from './SolutionModal';
+import LessonContentPanel from './LessonContentPanel';
 import { FaSearch, FaSearchMinus, FaSearchPlus } from 'react-icons/fa';
 import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels';
 
-const MermaidEditor = ({ lessonTitle, markdownPath }) => {
+const MermaidEditor = ({ lessonTitle, markdownPath, exercisePaths }) => {
     console.log('MermaidEditor props:', { lessonTitle, markdownPath });
 
     const [code, setCode] = useState(`classDiagram
@@ -45,6 +45,10 @@ const MermaidEditor = ({ lessonTitle, markdownPath }) => {
     const [diagramKey, setDiagramKey] = useState(0);
     const diagramRef = useRef(null);
 
+    const [lessonContent, setLessonContent] = useState('');
+    const [exerciseContents, setExerciseContents] = useState([]);
+    const [openAccordionIndex, setOpenAccordionIndex] = useState(0);
+
     useEffect(() => {
         mermaid.initialize({
             startOnLoad: false,
@@ -70,7 +74,7 @@ const MermaidEditor = ({ lessonTitle, markdownPath }) => {
     Animal <|-- Dog
     Animal <|-- Cat`);
 
-        // Load markdown content
+        // Load lesson content
         if (markdownPath) {
             // Ensure the markdownPath is treated as an absolute path
             const absoluteMarkdownPath = markdownPath.startsWith('/') ? markdownPath : `/${markdownPath}`;
@@ -83,20 +87,44 @@ const MermaidEditor = ({ lessonTitle, markdownPath }) => {
                     return response.text();
                 })
                 .then(text => {
-                    console.log('Loaded markdown content:', text); // For debugging
+                    setLessonContent(text);
                     setMarkdownContent(text);
                     setMarkdownError(null);
                 })
                 .catch(error => {
-                    console.error('Error loading markdown:', error);
+                    console.error('Error loading lesson markdown:', error);
                     setMarkdownError('Failed to load lesson content. Please try again later.');
+                    setLessonContent('');
                     setMarkdownContent('');
                 });
         } else {
+            setLessonContent('');
             setMarkdownContent('');
             setMarkdownError('No lesson content available.');
         }
-    }, [markdownPath]);
+
+        // Load exercise contents
+        if (exercisePaths && exercisePaths.length > 0) {
+            Promise.all(exercisePaths.map(path => {
+                // Ensure each exercise path is treated as an absolute path
+                const absolutePath = path.startsWith('/') ? path : `/${path}`;
+                return fetch(absolutePath).then(response => {
+                    if (!response.ok) {
+                        throw new Error(`Failed to load exercise content from ${absolutePath}`);
+                    }
+                    return response.text();
+                });
+            }))
+                .then(contents => {
+                    setExerciseContents(contents);
+                })
+                .catch(error => {
+                    console.error('Error loading exercise markdown:', error);
+                    setMarkdownError('Failed to load exercise content. Please try again later.');
+                    setExerciseContents([]);
+                });
+        }
+    }, [markdownPath, exercisePaths]);
 
     const handleCodeChange = (value) => {
         setCode(value);
@@ -208,18 +236,11 @@ const MermaidEditor = ({ lessonTitle, markdownPath }) => {
             {/* Main Content */}
             <PanelGroup direction="horizontal" className="flex-1">
                 <Panel defaultSize={40} minSize={20}>
-                    <div className="h-full flex flex-col">
-                        <div className="h-12 flex items-center px-4 bg-gray-100 border-b border-gray-300">
-                            <h2 className="text-xl font-bold text-gray-800">{lessonTitle}</h2>
-                        </div>
-                        <div className="flex-1 overflow-auto p-4">
-                            {markdownError ? (
-                                <div className="text-red-500">{markdownError}</div>
-                            ) : (
-                                <MarkdownRenderer content={markdownContent} />
-                            )}
-                        </div>
-                    </div>
+                    <LessonContentPanel
+                        lessonTitle={lessonTitle}
+                        markdownPath={markdownPath}
+                        exercisePaths={exercisePaths}
+                    />
                 </Panel>
                 <PanelResizeHandle className="w-1 bg-gray-300 cursor-col-resize z-10" />
                 <Panel defaultSize={20} minSize={15}>
