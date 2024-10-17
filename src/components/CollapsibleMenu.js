@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
     FaHome,
-    FaPlayCircle,
     FaBars,
     FaChevronLeft,
     FaGraduationCap,
@@ -47,12 +46,6 @@ const CollapsibleMenu = () => {
                                 </span>
                                 {isMenuOpen && (isCourseStructureOpen ? <FaChevronDown /> : <FaChevronRight />)}
                             </button>
-                        </li>
-                        <li>
-                            <Link to="/playground" className={`w-full p-3 text-white hover:bg-blue-600 transition-colors duration-200 flex items-center ${isMenuOpen ? 'justify-start' : 'justify-center'}`}>
-                                <FaPlayCircle className={isMenuOpen ? 'mr-2' : ''} />
-                                {isMenuOpen && "Playground"}
-                            </Link>
                         </li>
                     </ul>
                 </nav>

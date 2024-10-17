@@ -16,3 +16,4 @@ In this exercise, you'll create a class diagram for a simple animal hierarchy.
 3. Establish the inheritance relationships between the classes.
 
 Use the Mermaid editor to create your class diagram. Good luck!
+
