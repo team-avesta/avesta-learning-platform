@@ -40,7 +40,7 @@ const AccordionItem = ({ title, content, isOpen, onToggle, isExercise, onStartEx
     );
 };
 
-const LessonContentPanel = ({ lessonTitle, markdownPath, exercises = [] }) => {
+const LessonContentPanel = ({ lessonTitle, markdownPath, exercises = [], onStartExercise }) => {
     const [lessonContent, setLessonContent] = useState('');
     const [exerciseContents, setExerciseContents] = useState([]);
     const [openAccordionIndex, setOpenAccordionIndex] = useState(0);
@@ -58,13 +58,11 @@ const LessonContentPanel = ({ lessonTitle, markdownPath, exercises = [] }) => {
 
         const loadContents = async () => {
             try {
-                // Load lesson content
                 if (markdownPath) {
                     const lessonText = await fetchContent(markdownPath);
                     setLessonContent(lessonText);
                 }
 
-                // Load exercise contents
                 if (exercises && exercises.length > 0) {
                     const exerciseTexts = await Promise.all(
                         exercises.map(exercise => fetchContent(exercise.markdownPath))
@@ -86,9 +84,35 @@ const LessonContentPanel = ({ lessonTitle, markdownPath, exercises = [] }) => {
         loadContents();
     }, [markdownPath, exercises]);
 
-    const handleStartExercise = (index) => {
+    const handleStartExercise = async (index) => {
         console.log(`Starting exercise ${index + 1}`);
-        // Add your exercise start logic here
+        const exercise = exercises[index];
+        if (exercise && exercise.solution) {
+            try {
+                const absoluteSolutionPath = exercise.solution.startsWith('/') ? exercise.solution : `/${exercise.solution}`;
+                const solutionContent = await fetch(absoluteSolutionPath).then(res => res.text());
+
+                // Try to match Mermaid code with or without the ```mermaid wrapper
+                const mermaidCodeMatch = solutionContent.match(/```mermaid\s*([\s\S]*?)\s*```/) || solutionContent.match(/classDiagram\s*([\s\S]*)/);
+
+                if (mermaidCodeMatch) {
+                    let mermaidCode = mermaidCodeMatch[1].trim();
+
+                    // If the code doesn't start with 'classDiagram', add it
+                    if (!mermaidCode.startsWith('classDiagram')) {
+                        mermaidCode = 'classDiagram\n' + mermaidCode;
+                    }
+
+                    onStartExercise(mermaidCode, index);
+                } else {
+                    console.error('No Mermaid code found in the solution file');
+                }
+            } catch (error) {
+                console.error('Error loading solution:', error);
+            }
+        } else {
+            console.error('No solution file found for this exercise');
+        }
     };
 
     return (

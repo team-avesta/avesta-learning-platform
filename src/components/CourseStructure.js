@@ -59,11 +59,17 @@ const CourseStructure = ({ isOpen, onToggle }) => {
             const absoluteMarkdownPath = lesson.markdownPath.startsWith('/') ? lesson.markdownPath : `/${lesson.markdownPath}`;
             console.log('Absolute Markdown path:', absoluteMarkdownPath);
 
+            const exercises = lesson.exercises ? lesson.exercises.map(exercise => ({
+                ...exercise,
+                markdownPath: exercise.markdownPath.startsWith('/') ? exercise.markdownPath : `/${exercise.markdownPath}`,
+                solution: exercise.solution.startsWith('/') ? exercise.solution : `/${exercise.solution}`
+            })) : [];
+
             navigate(`/course/${moduleIndex}/${lessonIndex}`, {
                 state: {
                     lessonTitle: lesson.title,
                     markdownPath: absoluteMarkdownPath,
-                    exercises: lesson.exercises || [] // Provide an empty array if exercises are undefined
+                    exercises: exercises
                 }
             });
         }

@@ -39,6 +39,7 @@ const MermaidEditor = ({ lessonTitle, markdownPath, exercises }) => {
     const [isSolutionDiagramExpanded, setIsSolutionDiagramExpanded] = useState(false);
     const [solutionZoomLevel, setSolutionZoomLevel] = useState(1);
     const [diagramKey, setDiagramKey] = useState(0);
+    const [currentExerciseIndex, setCurrentExerciseIndex] = useState(null);
     const diagramRef = useRef(null);
 
     useEffect(() => {
@@ -47,24 +48,6 @@ const MermaidEditor = ({ lessonTitle, markdownPath, exercises }) => {
             securityLevel: 'loose',
             experimental: true,
         });
-
-        // Set the solution code when the component mounts
-        setSolutionCode(`classDiagram
-    class Animal {
-        +String name
-        +int age
-        +makeSound()
-    }
-    class Dog {
-        +String breed
-        +bark()
-    }
-    class Cat {
-        +String color
-        +meow()
-    }
-    Animal <|-- Dog
-    Animal <|-- Cat`);
     }, []);
 
     const handleCodeChange = (value) => {
@@ -132,6 +115,12 @@ const MermaidEditor = ({ lessonTitle, markdownPath, exercises }) => {
     const zoomOut = () => setZoomLevel(prevZoom => Math.max(prevZoom - 0.1, 0.5));
     const resetZoom = () => setZoomLevel(1);
 
+    const handleStartExercise = (solutionMermaidCode, exerciseIndex) => {
+        setSolutionCode(solutionMermaidCode);
+        setCurrentExerciseIndex(exerciseIndex);
+        setShowSolutionForm(true);
+    };
+
     return (
         <div className="flex flex-col h-full">
             <PanelGroup direction="horizontal" className="flex-1">
@@ -140,6 +129,7 @@ const MermaidEditor = ({ lessonTitle, markdownPath, exercises }) => {
                         lessonTitle={lessonTitle}
                         markdownPath={markdownPath}
                         exercises={exercises}
+                        onStartExercise={handleStartExercise}
                     />
                 </Panel>
                 <PanelResizeHandle className="w-1 bg-gray-300 cursor-col-resize z-10" />
@@ -216,6 +206,7 @@ const MermaidEditor = ({ lessonTitle, markdownPath, exercises }) => {
                     solutionZoomLevel={solutionZoomLevel}
                     setSolutionZoomLevel={setSolutionZoomLevel}
                     handleSolutionClose={handleSolutionClose}
+                    exerciseIndex={currentExerciseIndex}
                 />
             )}
         </div>
