@@ -149,6 +149,7 @@ const MermaidEditor = ({ lessonTitle, markdownPath, exercises }) => {
                         onAddRelationship={addRelationship}
                         onShowSolution={showSolution}
                         solutionCode={solutionCode}
+                        isExerciseActive={currentExerciseIndex !== null}
                     />
                 </Panel>
                 <PanelResizeHandle className="w-1 bg-gray-300 cursor-col-resize z-10" />

@@ -43,7 +43,7 @@ const mermaidLanguage = StreamLanguage.define({
     }
 });
 
-const MermaidCodeEditor = ({ code, onChange, onAddClass, onAddInterface, onAddRelationship, onShowSolution, solutionCode }) => {
+const MermaidCodeEditor = ({ code, onChange, onAddClass, onAddInterface, onAddRelationship, onShowSolution, solutionCode, isExerciseActive }) => {
     const [showDropdown, setShowDropdown] = useState(false);
     const [comparisonResult, setComparisonResult] = useState(null);
     const [highlightedCode, setHighlightedCode] = useState('');
@@ -137,15 +137,17 @@ const MermaidCodeEditor = ({ code, onChange, onAddClass, onAddInterface, onAddRe
                     </div>
                     <button
                         onClick={compareMermaidCode}
-                        className="text-gray-700 hover:bg-gray-200 p-2 transition-colors duration-200 focus:outline-none"
+                        className={`text-gray-700 hover:bg-gray-200 p-2 transition-colors duration-200 focus:outline-none ${!isExerciseActive && 'opacity-50 cursor-not-allowed'}`}
                         title="Submit Design"
+                        disabled={!isExerciseActive}
                     >
                         <FaCheck />
                     </button>
                     <button
                         onClick={onShowSolution}
-                        className="text-gray-700 hover:bg-gray-200 p-2 rounded-r-md transition-colors duration-200 focus:outline-none"
+                        className={`text-gray-700 hover:bg-gray-200 p-2 rounded-r-md transition-colors duration-200 focus:outline-none ${!isExerciseActive && 'opacity-50 cursor-not-allowed'}`}
                         title="Show Solution"
+                        disabled={!isExerciseActive}
                     >
                         <FaLightbulb />
                     </button>
