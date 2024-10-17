@@ -4,19 +4,19 @@ import MermaidEditor from './MermaidEditor';
 
 const CourseArea = () => {
     const location = useLocation();
-    const { lessonTitle, markdownPath, exercisePaths } = location.state || {};
+    const { lessonTitle, markdownPath, exercises } = location.state || {};
 
     console.log('CourseArea state:', location.state);
     console.log('Lesson title:', lessonTitle);
     console.log('Markdown path:', markdownPath);
-    console.log('Exercise paths:', exercisePaths);
+    console.log('Exercises:', exercises);
 
     return (
         <div className="h-full">
             <MermaidEditor
                 lessonTitle={lessonTitle || 'Lesson Content'}
                 markdownPath={markdownPath || ''}
-                exercisePaths={exercisePaths || []}
+                exercises={exercises || []}
             />
         </div>
     );

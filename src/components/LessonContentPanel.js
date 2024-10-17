@@ -1,22 +1,36 @@
 import React, { useState, useEffect } from 'react';
 import { useCollapse } from 'react-collapsed';
 import MarkdownRenderer from './MarkdownRenderer';
-import { FaChevronDown, FaChevronUp } from 'react-icons/fa';
+import { FaChevronDown, FaChevronUp, FaPlay } from 'react-icons/fa';
 
-const AccordionItem = ({ title, content, isOpen, onToggle }) => {
+const AccordionItem = ({ title, content, isOpen, onToggle, isExercise, onStartExercise }) => {
     const { getCollapseProps, getToggleProps } = useCollapse({ isExpanded: isOpen });
 
     return (
         <div className="border-b border-gray-200">
-            <button
-                {...getToggleProps({
-                    onClick: onToggle,
-                    className: "flex justify-between items-center w-full p-4 text-left text-gray-800 hover:bg-gray-100"
-                })}
-            >
-                <span>{title}</span>
-                {isOpen ? <FaChevronUp /> : <FaChevronDown />}
-            </button>
+            <div className="flex items-center w-full p-4 text-left text-gray-800 hover:bg-gray-100">
+                <button
+                    {...getToggleProps({
+                        onClick: onToggle,
+                        className: "flex-grow flex justify-between items-center"
+                    })}
+                >
+                    <span>{title}</span>
+                    {isOpen ? <FaChevronUp /> : <FaChevronDown />}
+                </button>
+                {isExercise && (
+                    <button
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            onStartExercise();
+                        }}
+                        className="ml-4 bg-blue-500 hover:bg-blue-600 text-white font-bold p-2 rounded flex items-center justify-center"
+                        title="Start Exercise"
+                    >
+                        <FaPlay />
+                    </button>
+                )}
+            </div>
             <div {...getCollapseProps()}>
                 <div className="p-4">
                     <MarkdownRenderer content={content} />
@@ -26,59 +40,56 @@ const AccordionItem = ({ title, content, isOpen, onToggle }) => {
     );
 };
 
-const LessonContentPanel = ({ lessonTitle, markdownPath, exercisePaths }) => {
+const LessonContentPanel = ({ lessonTitle, markdownPath, exercises = [] }) => {
     const [lessonContent, setLessonContent] = useState('');
     const [exerciseContents, setExerciseContents] = useState([]);
     const [openAccordionIndex, setOpenAccordionIndex] = useState(0);
     const [markdownError, setMarkdownError] = useState(null);
 
     useEffect(() => {
-        // Load lesson content
-        if (markdownPath) {
-            const absoluteMarkdownPath = markdownPath.startsWith('/') ? markdownPath : `/${markdownPath}`;
+        const fetchContent = async (path) => {
+            const absolutePath = path.startsWith('/') ? path : `/${path}`;
+            const response = await fetch(absolutePath);
+            if (!response.ok) {
+                throw new Error(`Failed to load content from ${absolutePath}`);
+            }
+            return response.text();
+        };
 
-            fetch(absoluteMarkdownPath)
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Failed to load lesson content');
-                    }
-                    return response.text();
-                })
-                .then(text => {
-                    setLessonContent(text);
-                    setMarkdownError(null);
-                })
-                .catch(error => {
-                    console.error('Error loading lesson markdown:', error);
-                    setMarkdownError('Failed to load lesson content. Please try again later.');
-                    setLessonContent('');
-                });
-        } else {
-            setLessonContent('');
-            setMarkdownError('No lesson content available.');
-        }
+        const loadContents = async () => {
+            try {
+                // Load lesson content
+                if (markdownPath) {
+                    const lessonText = await fetchContent(markdownPath);
+                    setLessonContent(lessonText);
+                }
 
-        // Load exercise contents
-        if (exercisePaths && exercisePaths.length > 0) {
-            Promise.all(exercisePaths.map(path => {
-                const absolutePath = path.startsWith('/') ? path : `/${path}`;
-                return fetch(absolutePath).then(response => {
-                    if (!response.ok) {
-                        throw new Error(`Failed to load exercise content from ${absolutePath}`);
-                    }
-                    return response.text();
-                });
-            }))
-                .then(contents => {
-                    setExerciseContents(contents);
-                })
-                .catch(error => {
-                    console.error('Error loading exercise markdown:', error);
-                    setMarkdownError('Failed to load exercise content. Please try again later.');
+                // Load exercise contents
+                if (exercises && exercises.length > 0) {
+                    const exerciseTexts = await Promise.all(
+                        exercises.map(exercise => fetchContent(exercise.markdownPath))
+                    );
+                    setExerciseContents(exerciseTexts);
+                } else {
                     setExerciseContents([]);
-                });
-        }
-    }, [markdownPath, exercisePaths]);
+                }
+
+                setMarkdownError(null);
+            } catch (error) {
+                console.error('Error loading content:', error);
+                setMarkdownError('Failed to load content. Please try again later.');
+                setLessonContent('');
+                setExerciseContents([]);
+            }
+        };
+
+        loadContents();
+    }, [markdownPath, exercises]);
+
+    const handleStartExercise = (index) => {
+        console.log(`Starting exercise ${index + 1}`);
+        // Add your exercise start logic here
+    };
 
     return (
         <div className="h-full flex flex-col">
@@ -95,14 +106,17 @@ const LessonContentPanel = ({ lessonTitle, markdownPath, exercisePaths }) => {
                             content={lessonContent}
                             isOpen={openAccordionIndex === 0}
                             onToggle={() => setOpenAccordionIndex(openAccordionIndex === 0 ? -1 : 0)}
+                            isExercise={false}
                         />
                         {exerciseContents.map((content, index) => (
                             <AccordionItem
                                 key={index}
-                                title={`Exercise ${index + 1}`}
+                                title={exercises[index]?.title || `Exercise ${index + 1}`}
                                 content={content}
                                 isOpen={openAccordionIndex === index + 1}
                                 onToggle={() => setOpenAccordionIndex(openAccordionIndex === index + 1 ? -1 : index + 1)}
+                                isExercise={true}
+                                onStartExercise={() => handleStartExercise(index)}
                             />
                         ))}
                     </div>

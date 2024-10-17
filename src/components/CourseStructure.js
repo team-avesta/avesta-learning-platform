@@ -56,14 +56,14 @@ const CourseStructure = ({ isOpen, onToggle }) => {
             const lesson = courseStructure.modules[moduleIndex].lessons[lessonIndex];
             console.log('Lesson clicked:', lesson);
 
-            // Ensure the markdownPath is absolute
             const absoluteMarkdownPath = lesson.markdownPath.startsWith('/') ? lesson.markdownPath : `/${lesson.markdownPath}`;
             console.log('Absolute Markdown path:', absoluteMarkdownPath);
 
             navigate(`/course/${moduleIndex}/${lessonIndex}`, {
                 state: {
                     lessonTitle: lesson.title,
-                    markdownPath: absoluteMarkdownPath
+                    markdownPath: absoluteMarkdownPath,
+                    exercises: lesson.exercises || [] // Provide an empty array if exercises are undefined
                 }
             });
         }

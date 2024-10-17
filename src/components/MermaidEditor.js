@@ -10,8 +10,8 @@ import LessonContentPanel from './LessonContentPanel';
 import { FaSearch, FaSearchMinus, FaSearchPlus } from 'react-icons/fa';
 import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels';
 
-const MermaidEditor = ({ lessonTitle, markdownPath, exercisePaths }) => {
-    console.log('MermaidEditor props:', { lessonTitle, markdownPath });
+const MermaidEditor = ({ lessonTitle, markdownPath, exercises }) => {
+    console.log('MermaidEditor props:', { lessonTitle, markdownPath, exercises });
 
     const [code, setCode] = useState(`classDiagram
     class Animal {
@@ -31,7 +31,6 @@ const MermaidEditor = ({ lessonTitle, markdownPath, exercisePaths }) => {
     Animal <|-- Cats`);
     const [diagramType, setDiagramType] = useState('mermaid');
     const [zoomLevel, setZoomLevel] = useState(1);
-    const [isPreviewExpanded, setIsPreviewExpanded] = useState(false);
     const [showClassForm, setShowClassForm] = useState(false);
     const [showInterfaceForm, setShowInterfaceForm] = useState(false);
     const [showRelationshipForm, setShowRelationshipForm] = useState(false);
@@ -39,15 +38,8 @@ const MermaidEditor = ({ lessonTitle, markdownPath, exercisePaths }) => {
     const [solutionCode, setSolutionCode] = useState('');
     const [isSolutionDiagramExpanded, setIsSolutionDiagramExpanded] = useState(false);
     const [solutionZoomLevel, setSolutionZoomLevel] = useState(1);
-    const [isMenuOpen, setIsMenuOpen] = useState(true);
-    const [markdownContent, setMarkdownContent] = useState('');
-    const [markdownError, setMarkdownError] = useState(null);
     const [diagramKey, setDiagramKey] = useState(0);
     const diagramRef = useRef(null);
-
-    const [lessonContent, setLessonContent] = useState('');
-    const [exerciseContents, setExerciseContents] = useState([]);
-    const [openAccordionIndex, setOpenAccordionIndex] = useState(0);
 
     useEffect(() => {
         mermaid.initialize({
@@ -73,58 +65,7 @@ const MermaidEditor = ({ lessonTitle, markdownPath, exercisePaths }) => {
     }
     Animal <|-- Dog
     Animal <|-- Cat`);
-
-        // Load lesson content
-        if (markdownPath) {
-            // Ensure the markdownPath is treated as an absolute path
-            const absoluteMarkdownPath = markdownPath.startsWith('/') ? markdownPath : `/${markdownPath}`;
-
-            fetch(absoluteMarkdownPath)
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Failed to load lesson content');
-                    }
-                    return response.text();
-                })
-                .then(text => {
-                    setLessonContent(text);
-                    setMarkdownContent(text);
-                    setMarkdownError(null);
-                })
-                .catch(error => {
-                    console.error('Error loading lesson markdown:', error);
-                    setMarkdownError('Failed to load lesson content. Please try again later.');
-                    setLessonContent('');
-                    setMarkdownContent('');
-                });
-        } else {
-            setLessonContent('');
-            setMarkdownContent('');
-            setMarkdownError('No lesson content available.');
-        }
-
-        // Load exercise contents
-        if (exercisePaths && exercisePaths.length > 0) {
-            Promise.all(exercisePaths.map(path => {
-                // Ensure each exercise path is treated as an absolute path
-                const absolutePath = path.startsWith('/') ? path : `/${path}`;
-                return fetch(absolutePath).then(response => {
-                    if (!response.ok) {
-                        throw new Error(`Failed to load exercise content from ${absolutePath}`);
-                    }
-                    return response.text();
-                });
-            }))
-                .then(contents => {
-                    setExerciseContents(contents);
-                })
-                .catch(error => {
-                    console.error('Error loading exercise markdown:', error);
-                    setMarkdownError('Failed to load exercise content. Please try again later.');
-                    setExerciseContents([]);
-                });
-        }
-    }, [markdownPath, exercisePaths]);
+    }, []);
 
     const handleCodeChange = (value) => {
         setCode(value);
@@ -133,12 +74,6 @@ const MermaidEditor = ({ lessonTitle, markdownPath, exercisePaths }) => {
         } else {
             setDiagramType('mermaid');
         }
-    };
-
-    const insertAtCursor = (insertion) => {
-        const cursor = editorInstance.state.selection.main.head;
-        const newCode = code.slice(0, cursor) + insertion + code.slice(cursor);
-        setCode(newCode);
     };
 
     const addClass = () => {
@@ -180,51 +115,17 @@ const MermaidEditor = ({ lessonTitle, markdownPath, exercisePaths }) => {
         setShowRelationshipForm(false);
     };
 
-    const togglePreviewExpansion = () => {
-        setIsPreviewExpanded(!isPreviewExpanded);
-    };
-
     const showSolution = () => {
-        console.log("Showing solution");
-        // This is where you'd set your pre-written solution code
-        const solution = `classDiagram
-    class Animal {
-        +String name
-        +int age
-        +makeSound()
-    }
-    class Dog {
-        +String breed
-        +bark()
-    }
-    class Cat {
-        +String color
-        +meow()
-    }
-    Animal <|-- Dog
-    Animal <|-- Cat`;
-
-        setSolutionCode(solution);
         setShowSolutionForm(true);
     };
 
     const handleSolutionClose = () => {
-        console.log("Closing solution");
         setShowSolutionForm(false);
-        // Force re-render of the diagram
         setDiagramKey(prevKey => prevKey + 1);
     };
 
     const toggleSolutionDiagramExpansion = () => {
         setIsSolutionDiagramExpanded(!isSolutionDiagramExpanded);
-    };
-
-    const solutionZoomIn = () => {
-        setSolutionZoomLevel(prevZoom => Math.min(prevZoom + 0.1, 2));
-    };
-
-    const solutionZoomOut = () => {
-        setSolutionZoomLevel(prevZoom => Math.max(prevZoom - 0.1, 0.5));
     };
 
     const zoomIn = () => setZoomLevel(prevZoom => Math.min(prevZoom + 0.1, 2));
@@ -233,13 +134,12 @@ const MermaidEditor = ({ lessonTitle, markdownPath, exercisePaths }) => {
 
     return (
         <div className="flex flex-col h-full">
-            {/* Main Content */}
             <PanelGroup direction="horizontal" className="flex-1">
                 <Panel defaultSize={40} minSize={20}>
                     <LessonContentPanel
                         lessonTitle={lessonTitle}
                         markdownPath={markdownPath}
-                        exercisePaths={exercisePaths}
+                        exercises={exercises}
                     />
                 </Panel>
                 <PanelResizeHandle className="w-1 bg-gray-300 cursor-col-resize z-10" />
