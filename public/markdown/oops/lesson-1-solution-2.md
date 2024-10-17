@@ -1,5 +1,5 @@
 classDiagram
-    class Animal {
+    class Animals {
         +String name
         +int age
         +makeSound()

@@ -8,7 +8,7 @@ classDiagram
         +String breed
         +bark()
     }
-    class Cats {
+    class Cat {
         +String color
         +meow()
     }

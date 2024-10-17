@@ -19,20 +19,17 @@ const InterfaceForm = ({ onSubmit, onClose }) => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        let interfaceCode = `class ${interfaceName}`;
+        let interfaceCode = `class ${interfaceName} {
+    <<interface>>`;
 
-        const hasMethods = methods.some(method => method.name.trim() !== '' || method.returnType.trim() !== '');
-
-        if (hasMethods) {
-            interfaceCode += ` {\n    <<interface>>\n`;
-            interfaceCode += methods
+        if (methods.some(method => method.name.trim() !== '' || method.returnType.trim() !== '')) {
+            interfaceCode += '\n' + methods
                 .filter(method => method.name.trim() !== '' || method.returnType.trim() !== '')
-                .map(method => `    +${method.name}()${method.returnType ? ': ' + method.returnType : ''}`)
+                .map(method => `    ${method.returnType}${method.returnType && method.name ? ' ' : ''}${method.name}()`)
                 .join('\n');
-            interfaceCode += '\n}';
-        } else {
-            interfaceCode += ' {\n    <<interface>>\n}';
         }
+
+        interfaceCode += '\n}';
 
         onSubmit(interfaceCode);
     };
