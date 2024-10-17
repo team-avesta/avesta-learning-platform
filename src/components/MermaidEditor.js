@@ -118,7 +118,14 @@ const MermaidEditor = ({ lessonTitle, markdownPath, exercises }) => {
     const handleStartExercise = (solutionMermaidCode, exerciseIndex) => {
         setSolutionCode(solutionMermaidCode);
         setCurrentExerciseIndex(exerciseIndex);
-        setShowSolutionForm(true);
+        // Remove this line to prevent the solution window from opening immediately
+        // setShowSolutionForm(true);
+
+        // Optionally, you can clear the current code to give the user a clean slate
+        setCode('');
+
+        // You might want to add some visual feedback that the exercise has started
+        console.log(`Exercise ${exerciseIndex + 1} started. Solution code loaded.`);
     };
 
     return (
