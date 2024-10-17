@@ -13,22 +13,7 @@ import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels';
 const MermaidEditor = ({ lessonTitle, markdownPath, exercises }) => {
     console.log('MermaidEditor props:', { lessonTitle, markdownPath, exercises });
 
-    const [code, setCode] = useState(`classDiagram
-    class Animal {
-        +String names
-        +int age
-        +makeSound()
-    }
-    class Dogs {
-        +String breed
-        +bark()
-    }
-    class Cat {
-        +String color
-        +meow()
-    }
-    Animal <|-- Dog
-    Animal <|-- Cats`);
+    const [code, setCode] = useState(''); // Start with an empty code editor
     const [diagramType, setDiagramType] = useState('mermaid');
     const [zoomLevel, setZoomLevel] = useState(1);
     const [showClassForm, setShowClassForm] = useState(false);

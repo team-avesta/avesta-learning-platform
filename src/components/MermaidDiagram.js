@@ -1,6 +1,5 @@
 import React, { useEffect, useRef, forwardRef } from 'react';
 import mermaid from 'mermaid';
-import { FaSearch, FaSearchMinus, FaSearchPlus } from 'react-icons/fa';
 
 const MermaidDiagram = forwardRef(({ code, zoomLevel, setZoomLevel }, ref) => {
     const internalRef = useRef(null);
@@ -47,16 +46,8 @@ const MermaidDiagram = forwardRef(({ code, zoomLevel, setZoomLevel }, ref) => {
         }
     };
 
-    const zoomIn = () => setZoomLevel(prevZoom => Math.min(prevZoom + 0.1, 2));
-    const zoomOut = () => setZoomLevel(prevZoom => Math.max(prevZoom - 0.1, 0.5));
-    const resetZoom = () => setZoomLevel(1);
-
     return (
-        <div className="flex flex-col h-full bg-white">
-            <div className="flex-grow overflow-auto">
-                <div ref={diagramRef} className="h-full"></div>
-            </div>
-        </div>
+        <div className="h-full" ref={diagramRef}></div>
     );
 });
 
