@@ -1,10 +1,47 @@
 import React, { useState, useEffect } from 'react';
 import { useCollapse } from 'react-collapsed';
 import MarkdownRenderer from './MarkdownRenderer';
-import { FaChevronDown, FaChevronUp, FaPlay } from 'react-icons/fa';
+import { FaChevronDown, FaChevronUp, FaPlay, FaTimes } from 'react-icons/fa';
 
-const AccordionItem = ({ title, content, isOpen, onToggle, isExercise, onStartExercise }) => {
+const ConfirmationModal = ({ isOpen, onClose, onConfirm, title, message }) => {
+    if (!isOpen) return null;
+
+    return (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+            <div className="bg-white p-6 rounded-lg shadow-xl">
+                <h3 className="text-lg font-bold mb-4">{title}</h3>
+                <p className="mb-4">{message}</p>
+                <div className="flex justify-end space-x-2">
+                    <button
+                        onClick={onClose}
+                        className="px-4 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400"
+                    >
+                        Cancel
+                    </button>
+                    <button
+                        onClick={onConfirm}
+                        className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+                    >
+                        Confirm
+                    </button>
+                </div>
+            </div>
+        </div>
+    );
+};
+
+const AccordionItem = ({ title, content, isOpen, onToggle, isExercise, onStartExercise, onCloseExercise, isExerciseActive }) => {
     const { getCollapseProps, getToggleProps } = useCollapse({ isExpanded: isOpen });
+    const [showStartConfirmation, setShowStartConfirmation] = useState(false);
+    const [showCloseConfirmation, setShowCloseConfirmation] = useState(false);
+
+    const handleStartExercise = () => {
+        setShowStartConfirmation(true);
+    };
+
+    const handleCloseExercise = () => {
+        setShowCloseConfirmation(true);
+    };
 
     return (
         <div className="border-b border-gray-200">
@@ -19,16 +56,29 @@ const AccordionItem = ({ title, content, isOpen, onToggle, isExercise, onStartEx
                     {isOpen ? <FaChevronUp /> : <FaChevronDown />}
                 </button>
                 {isExercise && (
-                    <button
-                        onClick={(e) => {
-                            e.stopPropagation();
-                            onStartExercise();
-                        }}
-                        className="ml-4 bg-blue-500 hover:bg-blue-600 text-white font-bold p-2 rounded flex items-center justify-center"
-                        title="Start Exercise"
-                    >
-                        <FaPlay />
-                    </button>
+                    isExerciseActive ? (
+                        <button
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                handleCloseExercise();
+                            }}
+                            className="ml-4 bg-red-500 hover:bg-red-600 text-white font-bold p-2 rounded flex items-center justify-center"
+                            title="Close Exercise"
+                        >
+                            <FaTimes />
+                        </button>
+                    ) : (
+                        <button
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                handleStartExercise();
+                            }}
+                            className="ml-4 bg-blue-500 hover:bg-blue-600 text-white font-bold p-2 rounded flex items-center justify-center"
+                            title="Start Exercise"
+                        >
+                            <FaPlay />
+                        </button>
+                    )
                 )}
             </div>
             <div {...getCollapseProps()}>
@@ -36,44 +86,35 @@ const AccordionItem = ({ title, content, isOpen, onToggle, isExercise, onStartEx
                     <MarkdownRenderer content={content} />
                 </div>
             </div>
+            <ConfirmationModal
+                isOpen={showStartConfirmation}
+                onClose={() => setShowStartConfirmation(false)}
+                onConfirm={() => {
+                    setShowStartConfirmation(false);
+                    onStartExercise();
+                }}
+                title="Start Exercise"
+                message="Are you ready to start this exercise? Your current work will be saved."
+            />
+            <ConfirmationModal
+                isOpen={showCloseConfirmation}
+                onClose={() => setShowCloseConfirmation(false)}
+                onConfirm={() => {
+                    setShowCloseConfirmation(false);
+                    onCloseExercise();
+                }}
+                title="Close Exercise"
+                message="Are you sure you want to close this exercise? Your progress will be lost."
+            />
         </div>
     );
 };
 
-const ConfirmationModal = ({ isOpen, onClose, onConfirm, exerciseTitle }) => {
-    if (!isOpen) return null;
-
-    return (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-            <div className="bg-white p-6 rounded-lg shadow-xl">
-                <h3 className="text-lg font-bold mb-4">Start Exercise</h3>
-                <p className="mb-4">Are you ready to start "{exerciseTitle}"?</p>
-                <div className="flex justify-end space-x-2">
-                    <button
-                        onClick={onClose}
-                        className="px-4 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400"
-                    >
-                        Cancel
-                    </button>
-                    <button
-                        onClick={onConfirm}
-                        className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-                    >
-                        Start
-                    </button>
-                </div>
-            </div>
-        </div>
-    );
-};
-
-const LessonContentPanel = ({ lessonTitle, markdownPath, exercises = [], onStartExercise }) => {
+const LessonContentPanel = ({ lessonTitle, markdownPath, exercises = [], onStartExercise, onExerciseClose, currentExercise }) => {
     const [lessonContent, setLessonContent] = useState('');
     const [exerciseContents, setExerciseContents] = useState([]);
     const [openAccordionIndex, setOpenAccordionIndex] = useState(0);
     const [markdownError, setMarkdownError] = useState(null);
-    const [showConfirmation, setShowConfirmation] = useState(false);
-    const [selectedExerciseIndex, setSelectedExerciseIndex] = useState(null);
 
     useEffect(() => {
         const fetchContent = async (path) => {
@@ -113,45 +154,6 @@ const LessonContentPanel = ({ lessonTitle, markdownPath, exercises = [], onStart
         loadContents();
     }, [markdownPath, exercises]);
 
-    const handleStartExercise = async (index) => {
-        setSelectedExerciseIndex(index);
-        setShowConfirmation(true);
-    };
-
-    const confirmStartExercise = async () => {
-        setShowConfirmation(false);
-        const index = selectedExerciseIndex;
-        console.log(`Starting exercise ${index + 1}`);
-        const exercise = exercises[index];
-        if (exercise && exercise.solution) {
-            try {
-                const absoluteSolutionPath = exercise.solution.startsWith('/') ? exercise.solution : `/${exercise.solution}`;
-                const solutionContent = await fetch(absoluteSolutionPath).then(res => res.text());
-
-                const mermaidCodeMatch = solutionContent.match(/```mermaid\s*([\s\S]*?)\s*```/) || solutionContent.match(/classDiagram\s*([\s\S]*)/);
-
-                if (mermaidCodeMatch) {
-                    let mermaidCode = mermaidCodeMatch[1].trim();
-
-                    if (!mermaidCode.startsWith('classDiagram')) {
-                        mermaidCode = 'classDiagram\n' + mermaidCode;
-                    }
-
-                    onStartExercise(mermaidCode, index);
-
-                    // Toggle the exercise accordion panel
-                    setOpenAccordionIndex(index + 1);
-                } else {
-                    console.error('No Mermaid code found in the solution file');
-                }
-            } catch (error) {
-                console.error('Error loading solution:', error);
-            }
-        } else {
-            console.error('No solution file found for this exercise');
-        }
-    };
-
     return (
         <div className="h-full flex flex-col">
             <div className="h-12 flex items-center px-4 bg-gray-100 border-b border-gray-300">
@@ -177,18 +179,14 @@ const LessonContentPanel = ({ lessonTitle, markdownPath, exercises = [], onStart
                                 isOpen={openAccordionIndex === index + 1}
                                 onToggle={() => setOpenAccordionIndex(openAccordionIndex === index + 1 ? -1 : index + 1)}
                                 isExercise={true}
-                                onStartExercise={() => handleStartExercise(index)}
+                                onStartExercise={() => onStartExercise(index)}
+                                onCloseExercise={() => onExerciseClose()}
+                                isExerciseActive={currentExercise === exercises[index]}
                             />
                         ))}
                     </div>
                 )}
             </div>
-            <ConfirmationModal
-                isOpen={showConfirmation}
-                onClose={() => setShowConfirmation(false)}
-                onConfirm={confirmStartExercise}
-                exerciseTitle={exercises[selectedExerciseIndex]?.title || `Exercise ${selectedExerciseIndex + 1}`}
-            />
         </div>
     );
 };

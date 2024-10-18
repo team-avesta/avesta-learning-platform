@@ -10,10 +10,10 @@ import LessonContentPanel from './LessonContentPanel';
 import { FaSearch, FaSearchMinus, FaSearchPlus } from 'react-icons/fa';
 import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels';
 
-const MermaidEditor = ({ lessonTitle, markdownPath, exercises }) => {
+const MermaidEditor = ({ lessonTitle, markdownPath, exercises, onExerciseStart, onExerciseClose, currentExercise }) => {
     console.log('MermaidEditor props:', { lessonTitle, markdownPath, exercises });
 
-    const [code, setCode] = useState(''); // Start with an empty code editor
+    const [code, setCode] = useState('');
     const [diagramType, setDiagramType] = useState('mermaid');
     const [zoomLevel, setZoomLevel] = useState(1);
     const [showClassForm, setShowClassForm] = useState(false);
@@ -34,6 +34,13 @@ const MermaidEditor = ({ lessonTitle, markdownPath, exercises }) => {
             experimental: true,
         });
     }, []);
+
+    useEffect(() => {
+        if (!currentExercise) {
+            setCode('');
+            setSolutionCode('');
+        }
+    }, [currentExercise]);
 
     const handleCodeChange = (value) => {
         setCode(value);
@@ -100,17 +107,37 @@ const MermaidEditor = ({ lessonTitle, markdownPath, exercises }) => {
     const zoomOut = () => setZoomLevel(prevZoom => Math.max(prevZoom - 0.1, 0.5));
     const resetZoom = () => setZoomLevel(1);
 
-    const handleStartExercise = (solutionMermaidCode, exerciseIndex) => {
-        setSolutionCode(solutionMermaidCode);
+    const handleStartExercise = async (exerciseIndex) => {
+        console.log(`Starting exercise with index: ${exerciseIndex}`);
         setCurrentExerciseIndex(exerciseIndex);
-        // Remove this line to prevent the solution window from opening immediately
-        // setShowSolutionForm(true);
+        const exercise = exercises[exerciseIndex];
+        if (exercise && exercise.solution) {
+            try {
+                const absoluteSolutionPath = exercise.solution.startsWith('/') ? exercise.solution : `/${exercise.solution}`;
+                const solutionContent = await fetch(absoluteSolutionPath).then(res => res.text());
 
-        // Optionally, you can clear the current code to give the user a clean slate
-        setCode('');
+                const mermaidCodeMatch = solutionContent.match(/```mermaid\s*([\s\S]*?)\s*```/) || solutionContent.match(/classDiagram\s*([\s\S]*)/);
 
-        // You might want to add some visual feedback that the exercise has started
-        console.log(`Exercise ${exerciseIndex + 1} started. Solution code loaded.`);
+                if (mermaidCodeMatch) {
+                    let mermaidCode = mermaidCodeMatch[1].trim();
+
+                    if (!mermaidCode.startsWith('classDiagram')) {
+                        mermaidCode = 'classDiagram\n' + mermaidCode;
+                    }
+
+                    setSolutionCode(mermaidCode);
+                    setCode('');
+                    console.log(`Exercise ${exerciseIndex + 1} started. Solution code loaded.`);
+                    onExerciseStart(exerciseIndex);
+                } else {
+                    console.error('No Mermaid code found in the solution file');
+                }
+            } catch (error) {
+                console.error('Error loading solution:', error);
+            }
+        } else {
+            console.error('No solution file found for this exercise');
+        }
     };
 
     return (
@@ -122,6 +149,8 @@ const MermaidEditor = ({ lessonTitle, markdownPath, exercises }) => {
                         markdownPath={markdownPath}
                         exercises={exercises}
                         onStartExercise={handleStartExercise}
+                        onExerciseClose={onExerciseClose}
+                        currentExercise={currentExercise}
                     />
                 </Panel>
                 <PanelResizeHandle className="w-1 bg-gray-300 cursor-col-resize z-10" />
@@ -134,7 +163,7 @@ const MermaidEditor = ({ lessonTitle, markdownPath, exercises }) => {
                         onAddRelationship={addRelationship}
                         onShowSolution={showSolution}
                         solutionCode={solutionCode}
-                        isExerciseActive={currentExerciseIndex !== null}
+                        isExerciseActive={!!currentExercise}
                     />
                 </Panel>
                 <PanelResizeHandle className="w-1 bg-gray-300 cursor-col-resize z-10" />
