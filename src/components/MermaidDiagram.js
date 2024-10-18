@@ -6,10 +6,8 @@ const MermaidDiagram = forwardRef(({ code, zoomLevel, setZoomLevel }, ref) => {
     const diagramRef = ref || internalRef;
 
     useEffect(() => {
-        console.log("MermaidDiagram useEffect triggered");
         if (diagramRef.current) {
             if (!code.trim()) {
-                // Show a nice message when there's no code
                 diagramRef.current.innerHTML = `
                     <div class="flex items-center justify-center h-full">
                         <p class="text-gray-500 text-lg">
@@ -18,14 +16,14 @@ const MermaidDiagram = forwardRef(({ code, zoomLevel, setZoomLevel }, ref) => {
                     </div>
                 `;
             } else {
-                console.log("Rendering diagram with code:", code);
-                mermaid.render('diagram', code).then((result) => {
-                    console.log("Diagram rendered successfully");
+                // Suppress console errors
+                const originalConsoleError = console.error;
+                console.error = () => { };
+
+                mermaid.render('diagram', code, diagramRef.current).then((result) => {
                     diagramRef.current.innerHTML = result.svg;
                     applyZoom();
-                }).catch((error) => {
-                    console.error('Mermaid error:', error);
-                    // Show a user-friendly error message
+                }).catch(() => {
                     diagramRef.current.innerHTML = `
                         <div class="flex items-center justify-center h-full">
                             <p class="text-red-500 text-lg">
@@ -34,7 +32,16 @@ const MermaidDiagram = forwardRef(({ code, zoomLevel, setZoomLevel }, ref) => {
                             </p>
                         </div>
                     `;
+                }).finally(() => {
+                    // Restore console.error
+                    console.error = originalConsoleError;
                 });
+
+                // Remove the additional error div
+                const errorDiv = document.querySelector('.mermaid > .error');
+                if (errorDiv) {
+                    errorDiv.remove();
+                }
             }
         }
     }, [code, zoomLevel]);
