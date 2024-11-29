@@ -1,9 +1,10 @@
 import React, { useEffect, useRef, forwardRef } from 'react';
 import mermaid from 'mermaid';
 
-const MermaidDiagram = forwardRef(({ code, zoomLevel, setZoomLevel }, ref) => {
+const MermaidDiagram = forwardRef(({ code, zoomLevel, setZoomLevel, isSolution }, ref) => {
     const internalRef = useRef(null);
     const diagramRef = ref || internalRef;
+    const diagramId = isSolution ? 'solution-diagram' : 'main-diagram';
 
     useEffect(() => {
         if (diagramRef.current) {
@@ -20,7 +21,7 @@ const MermaidDiagram = forwardRef(({ code, zoomLevel, setZoomLevel }, ref) => {
                 const originalConsoleError = console.error;
                 console.error = () => { };
 
-                mermaid.render('diagram', code, diagramRef.current).then((result) => {
+                mermaid.render(diagramId, code, diagramRef.current).then((result) => {
                     diagramRef.current.innerHTML = result.svg;
                     applyZoom();
                 }).catch(() => {
@@ -44,7 +45,7 @@ const MermaidDiagram = forwardRef(({ code, zoomLevel, setZoomLevel }, ref) => {
                 }
             }
         }
-    }, [code, zoomLevel]);
+    }, [code, zoomLevel, diagramId]);
 
     const applyZoom = () => {
         if (diagramRef.current) {

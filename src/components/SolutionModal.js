@@ -66,7 +66,12 @@ const SolutionModal = ({
                             </div>
                         </div>
                         <div className="flex-1 overflow-auto">
-                            <MermaidDiagram code={solutionCode} zoomLevel={solutionZoomLevel} setZoomLevel={setSolutionZoomLevel} />
+                            <MermaidDiagram
+                                code={solutionCode}
+                                zoomLevel={solutionZoomLevel}
+                                setZoomLevel={setSolutionZoomLevel}
+                                isSolution={true}
+                            />
                         </div>
                     </div>
                 </div>
