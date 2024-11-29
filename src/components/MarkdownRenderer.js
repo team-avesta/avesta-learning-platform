@@ -5,8 +5,17 @@ import rehypeRaw from 'rehype-raw';
 import remarkToc from 'remark-toc';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
+import { useState } from 'react';
 
 const MarkdownRenderer = ({ content }) => {
+    const [copiedIndex, setCopiedIndex] = useState(null);
+
+    const handleCopy = (text, index) => {
+        navigator.clipboard.writeText(text);
+        setCopiedIndex(index);
+        setTimeout(() => setCopiedIndex(null), 2000);
+    };
+
     return (
         <div className="prose prose-sm max-w-none prose-invert bg-gray-800 text-gray-200 p-4 rounded-lg">
             <ReactMarkdown
@@ -16,13 +25,21 @@ const MarkdownRenderer = ({ content }) => {
                     code({ node, inline, className, children, ...props }) {
                         const match = /language-(\w+)/.exec(className || '')
                         return !inline && match ? (
-                            <SyntaxHighlighter
-                                {...props}
-                                children={String(children).replace(/\n$/, '')}
-                                style={vscDarkPlus}
-                                language={match[1]}
-                                PreTag="div"
-                            />
+                            <div className="relative group">
+                                <button
+                                    onClick={() => handleCopy(String(children), node.position?.start.line)}
+                                    className="absolute right-2 top-2 bg-gray-700 hover:bg-gray-600 text-gray-300 px-2 py-1 rounded text-sm opacity-0 group-hover:opacity-100 transition-opacity"
+                                >
+                                    {copiedIndex === node.position?.start.line ? 'Copied!' : 'Copy'}
+                                </button>
+                                <SyntaxHighlighter
+                                    {...props}
+                                    children={String(children).replace(/\n$/, '')}
+                                    style={vscDarkPlus}
+                                    language={match[1]}
+                                    PreTag="div"
+                                />
+                            </div>
                         ) : (
                             <code {...props} className={`${className} text-gray-200 px-1 rounded`}>
                                 {children}
