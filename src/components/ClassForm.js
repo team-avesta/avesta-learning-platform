@@ -30,7 +30,7 @@ const ClassForm = ({ onSubmit, onClose }) => {
             if (hasAttributes) {
                 classCode += attributes
                     .filter(attr => attr.name.trim() !== '' || attr.type.trim() !== '')
-                    .map(attr => `    ${attr.visibility === 'private' ? '-' : '+'}${attr.type}${attr.type && attr.name ? ' ' : ''}${attr.name}`)
+                    .map(attr => `    ${attr.visibility === 'private' ? '-' : '+'}${attr.name}${attr.type ? ': ' + attr.type : ''}`)
                     .join('\n');
                 classCode += '\n';
             }

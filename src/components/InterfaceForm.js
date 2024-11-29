@@ -25,7 +25,7 @@ const InterfaceForm = ({ onSubmit, onClose }) => {
         if (methods.some(method => method.name.trim() !== '' || method.returnType.trim() !== '')) {
             interfaceCode += '\n' + methods
                 .filter(method => method.name.trim() !== '' || method.returnType.trim() !== '')
-                .map(method => `    ${method.returnType}${method.returnType && method.name ? ' ' : ''}${method.name}()`)
+                .map(method => `    ${method.name}()${method.returnType ? ': ' + method.returnType : ''}`)
                 .join('\n');
         }
 

@@ -11,7 +11,28 @@ const MarkdownRenderer = ({ content }) => {
     const [copiedIndex, setCopiedIndex] = useState(null);
 
     const handleCopy = (text, index) => {
-        navigator.clipboard.writeText(text);
+        // Fallback copy method
+        const copyToClipboard = (text) => {
+            const textarea = document.createElement('textarea');
+            textarea.value = text;
+            document.body.appendChild(textarea);
+            textarea.select();
+            try {
+                document.execCommand('copy');
+            } catch (err) {
+                console.error('Failed to copy text:', err);
+            }
+            document.body.removeChild(textarea);
+        };
+
+        // Try navigator.clipboard first, fall back to execCommand
+        if (navigator.clipboard && window.isSecureContext) {
+            navigator.clipboard.writeText(text)
+                .catch(() => copyToClipboard(text));
+        } else {
+            copyToClipboard(text);
+        }
+
         setCopiedIndex(index);
         setTimeout(() => setCopiedIndex(null), 2000);
     };
