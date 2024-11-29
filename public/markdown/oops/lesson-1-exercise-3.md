@@ -1,7 +1,7 @@
-## Exercise 2: Restaurant Menu Management
+## Exercise 3: Hospital Patient Management
 
 ### Requirements:
-A restaurant menu contains multiple dishes. Each dish has a name, price, category (starter, main course, dessert), and availability status. Dishes should have behaviors to mark them as available or unavailable.
+A hospital manages patient records. Each patient has a name, age, medical record number (MRN), and current status (admitted, discharged). Patients can be admitted or discharged based on their status.
 
 ## How to Approach These Exercises
 

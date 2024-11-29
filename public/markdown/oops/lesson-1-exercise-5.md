@@ -1,7 +1,7 @@
-## Exercise 2: Restaurant Menu Management
+## Exercise 5: Smart Home Device Management
 
 ### Requirements:
-A restaurant menu contains multiple dishes. Each dish has a name, price, category (starter, main course, dessert), and availability status. Dishes should have behaviors to mark them as available or unavailable.
+A smart home system manages devices. Each device has a name, type (light, thermostat, etc.), status (on or off), and a room where it is located. Devices should have behaviors to turn on or turn off.
 
 ## How to Approach These Exercises
 

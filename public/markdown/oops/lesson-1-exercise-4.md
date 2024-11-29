@@ -1,7 +1,7 @@
-## Exercise 2: Restaurant Menu Management
+## Exercise 4: E-Learning Platform
 
 ### Requirements:
-A restaurant menu contains multiple dishes. Each dish has a name, price, category (starter, main course, dessert), and availability status. Dishes should have behaviors to mark them as available or unavailable.
+An e-learning platform manages courses. Each course has a title, instructor, duration (in hours), and enrollment status (open or closed). Courses should have behaviors such as opening or closing enrollment.
 
 ## How to Approach These Exercises
 

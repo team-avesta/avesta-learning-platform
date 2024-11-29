@@ -1,16 +1,9 @@
 classDiagram
-    class Animal {
-        +String name
-        +int age
-        +makeSound()
-    }
-    class Dog {
-        +String breed
-        +bark()
-    }
-    class Cat {
-        +String color
-        +meow()
-    }
-    Animal <|-- Dog
-    Animal <|-- Cat
+class Vehicle {
+    - modelName: String
+    - registrationNumber: String
+    - type: String
+    - rentalStatus: String
+    + rent(): void
+    + returnVehicle(): void
+}

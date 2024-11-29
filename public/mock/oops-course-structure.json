@@ -7,20 +7,38 @@
             "lessons": [
                 {
                     "id": "1",
-                    "title": "Lesson 1: Encapsulation and Abstraction",
+                    "title": "Lesson 1: Class",
                     "markdownPath": "markdown/oops/lesson-1.md",
                     "exercises": [
                         {
                             "id": "1",
-                            "title": "Exercise 1: Encapsulation",
+                            "title": "Exercise 1: Vehicle Rental System",
                             "markdownPath": "markdown/oops/lesson-1-exercise-1.md",
                             "solution": "markdown/oops/lesson-1-solution-1.md"
                         },
                         {
                             "id": "2",
-                            "title": "Exercise 2: Abstraction",
+                            "title": "Exercise 2: Restaurant Menu Management",
                             "markdownPath": "markdown/oops/lesson-1-exercise-2.md",
                             "solution": "markdown/oops/lesson-1-solution-2.md"
+                        },
+                        {
+                            "id": "3",
+                            "title": "Exercise 3: Hospital Patient Management",
+                            "markdownPath": "markdown/oops/lesson-1-exercise-3.md",
+                            "solution": "markdown/oops/lesson-1-solution-3.md"
+                        },
+                        {
+                            "id": "4",
+                            "title": "Exercise 4: E-Learning Platform Management",
+                            "markdownPath": "markdown/oops/lesson-1-exercise-4.md",
+                            "solution": "markdown/oops/lesson-1-solution-4.md"
+                        },
+                        {
+                            "id": "5",
+                            "title": "Exercise 5: Smart Home Device Management",
+                            "markdownPath": "markdown/oops/lesson-1-exercise-5.md",
+                            "solution": "markdown/oops/lesson-1-solution-5.md"
                         }
                     ]
                 },
