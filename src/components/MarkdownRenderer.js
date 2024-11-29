@@ -55,9 +55,17 @@ const MarkdownRenderer = ({ content }) => {
                     ol: ({ node, ...props }) => <ol {...props} className="list-decimal pl-5 mb-4 text-gray-300" />,
                     li: ({ node, ...props }) => <li {...props} className="mb-1" />,
                     blockquote: ({ node, ...props }) => <blockquote {...props} className="border-l-4 border-gray-500 pl-4 italic text-gray-400" />,
-                    table: ({ node, ...props }) => <table {...props} className="border-collapse table-auto w-full text-sm" />,
-                    th: ({ node, ...props }) => <th {...props} className="border-b dark:border-gray-600 font-medium p-4 pl-8 pt-0 pb-3 text-gray-400 dark:text-gray-200 text-left" />,
-                    td: ({ node, ...props }) => <td {...props} className="border-b border-gray-600 p-4 pl-8 text-gray-300" />,
+                    table: ({ node, ...props }) => (
+                        <div className="overflow-x-auto">
+                            <table {...props} className="border-collapse table-auto w-full text-sm border border-gray-600" />
+                        </div>
+                    ),
+                    th: ({ node, ...props }) => (
+                        <th {...props} className="border border-gray-600 font-medium p-4 pl-8 pt-3 pb-3 text-gray-200 text-left bg-gray-700" />
+                    ),
+                    td: ({ node, ...props }) => (
+                        <td {...props} className="border border-gray-600 p-4 pl-8 text-gray-300" />
+                    ),
                 }}
             >
                 {content}
