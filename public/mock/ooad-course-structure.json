@@ -1,0 +1,120 @@
+{
+    "course": "Object Oriented Analysis & Design",
+    "modules": [
+        {
+            "id": "1",
+            "title": "Chapter 1: Well-Designed Apps Rock",
+            "lessons": [
+                {
+                    "id": "1",
+                    "title": "Lesson 1: Great Software Begins Here",
+                    "markdownPath": "markdown/ooad/chapter1/lesson-1.md"
+                }
+            ]
+        },
+        {
+            "id": "2",
+            "title": "Chapter 2: Gathering Requirements",
+            "lessons": [
+                {
+                    "id": "1",
+                    "title": "Lesson 1: Understanding User Needs",
+                    "markdownPath": "markdown/ooad/chapter2/lesson-1.md"
+                }
+            ]
+        },
+        {
+            "id": "3",
+            "title": "Chapter 3: Requirements Change",
+            "lessons": [
+                {
+                    "id": "1",
+                    "title": "Lesson 1: From Requirements to Code",
+                    "markdownPath": "markdown/ooad/chapter3/lesson-1.md"
+                }
+            ]
+        },
+        {
+            "id": "4",
+            "title": "Chapter 4: Analysis",
+            "lessons": [
+                {
+                    "id": "1",
+                    "title": "Lesson 1: Understanding the Problem",
+                    "markdownPath": "markdown/ooad/chapter4/lesson-1.md"
+                }
+            ]
+        },
+        {
+            "id": "5",
+            "title": "Chapter 5: Good Design = Flexible Software",
+            "lessons": [
+                {
+                    "id": "1",
+                    "title": "Lesson 1: Principles of Good Design",
+                    "markdownPath": "markdown/ooad/chapter5/lesson-1.md"
+                },
+                {
+                    "id": "2",
+                    "title": "Lesson 2: Design Principles in Action",
+                    "markdownPath": "markdown/ooad/chapter5/lesson-2.md"
+                }
+            ]
+        },
+        {
+            "id": "6",
+            "title": "Chapter 6: Solving Really Big Problems",
+            "lessons": [
+                {
+                    "id": "1",
+                    "title": "Lesson 1: Breaking Down Complex Systems",
+                    "markdownPath": "markdown/ooad/chapter6/lesson-1.md"
+                }
+            ]
+        },
+        {
+            "id": "7",
+            "title": "Chapter 7: Architecture",
+            "lessons": [
+                {
+                    "id": "1",
+                    "title": "Lesson 1: Building the Foundation",
+                    "markdownPath": "markdown/ooad/chapter7/lesson-1.md"
+                }
+            ]
+        },
+        {
+            "id": "8",
+            "title": "Chapter 8: Design Principles",
+            "lessons": [
+                {
+                    "id": "1",
+                    "title": "Lesson 1: OO Design Principles",
+                    "markdownPath": "markdown/ooad/chapter8/lesson-1.md"
+                }
+            ]
+        },
+        {
+            "id": "9",
+            "title": "Chapter 9: Iterating and Testing",
+            "lessons": [
+                {
+                    "id": "1",
+                    "title": "Lesson 1: Iterative Development and Testing",
+                    "markdownPath": "markdown/ooad/chapter9/lesson-1.md"
+                }
+            ]
+        },
+        {
+            "id": "10",
+            "title": "Chapter 10: The OOA&D Lifecycle",
+            "lessons": [
+                {
+                    "id": "1",
+                    "title": "Lesson 1: Putting It All Together",
+                    "markdownPath": "markdown/ooad/chapter10/lesson-1.md"
+                }
+            ]
+        }
+    ]
+}

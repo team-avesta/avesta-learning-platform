@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 import {
     FaChevronLeft,
     FaGraduationCap,
@@ -11,14 +11,16 @@ import {
     FaLock,
     FaMobileAlt,
     FaLightbulb,
-    FaBook
-} from 'react-icons/fa';
-import { useNavigate } from 'react-router-dom';
+    FaBook,
+    FaProjectDiagram
+} from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
 
 const CourseCard = ({ title, icon, isSelected, onClick }) => (
     <div
-        className={`p-2 rounded-lg cursor-pointer flex items-center justify-center ${isSelected ? 'bg-blue-600 text-white' : 'bg-blue-200 text-blue-800 hover:bg-blue-300'
-            } w-24 h-24 flex-col`}
+        className={`p-2 rounded-lg cursor-pointer flex items-center justify-center ${
+            isSelected ? "bg-blue-600 text-white" : "bg-blue-200 text-blue-800 hover:bg-blue-300"
+        } w-24 h-24 flex-col`}
         onClick={onClick}
         title={title}
     >
@@ -30,40 +32,54 @@ const CourseCard = ({ title, icon, isSelected, onClick }) => (
 const CourseStructure = ({ isOpen, onToggle }) => {
     const navigate = useNavigate();
     const [expandedModules, setExpandedModules] = useState({});
-    const [selectedCourse, setSelectedCourse] = useState('OOP Design');
+    const [selectedCourse, setSelectedCourse] = useState("OOP Design");
     const [courseStructure, setCourseStructure] = useState(null);
+    const [ooadCourseStructure, setOoadCourseStructure] = useState(null);
 
     useEffect(() => {
-        const fetchCourseStructure = async () => {
+        const fetchCourseStructures = async () => {
             try {
-                const response = await fetch('/mock/oops-course-structure.json');
-                const data = await response.json();
-                setCourseStructure(data);
+                const [oopsResponse, ooadResponse] = await Promise.all([
+                    fetch("/mock/oops-course-structure.json"),
+                    fetch("/mock/ooad-course-structure.json")
+                ]);
+
+                const oopsData = await oopsResponse.json();
+                const ooadData = await ooadResponse.json();
+
+                setCourseStructure(oopsData);
+                setOoadCourseStructure(ooadData);
             } catch (error) {
-                console.error('Error fetching course structure:', error);
+                console.error("Error fetching course structures:", error);
             }
         };
 
-        fetchCourseStructure();
+        fetchCourseStructures();
     }, []);
 
     const toggleModule = (moduleId) => {
-        setExpandedModules(prev => ({ ...prev, [moduleId]: !prev[moduleId] }));
+        setExpandedModules((prev) => ({ ...prev, [moduleId]: !prev[moduleId] }));
     };
 
-    const handleLessonClick = (moduleIndex, lessonIndex) => {
-        if (courseStructure) {
-            const lesson = courseStructure.modules[moduleIndex].lessons[lessonIndex];
-            console.log('Lesson clicked:', lesson);
+    const handleLessonClick = (moduleIndex, lessonIndex, structure) => {
+        if (structure) {
+            const lesson = structure.modules[moduleIndex].lessons[lessonIndex];
+            console.log("Lesson clicked:", lesson);
 
-            const absoluteMarkdownPath = lesson.markdownPath.startsWith('/') ? lesson.markdownPath : `/${lesson.markdownPath}`;
-            console.log('Absolute Markdown path:', absoluteMarkdownPath);
+            const absoluteMarkdownPath = lesson.markdownPath.startsWith("/")
+                ? lesson.markdownPath
+                : `/${lesson.markdownPath}`;
+            console.log("Absolute Markdown path:", absoluteMarkdownPath);
 
-            const exercises = lesson.exercises ? lesson.exercises.map(exercise => ({
-                ...exercise,
-                markdownPath: exercise.markdownPath.startsWith('/') ? exercise.markdownPath : `/${exercise.markdownPath}`,
-                solution: exercise.solution.startsWith('/') ? exercise.solution : `/${exercise.solution}`
-            })) : [];
+            const exercises = lesson.exercises
+                ? lesson.exercises.map((exercise) => ({
+                      ...exercise,
+                      markdownPath: exercise.markdownPath.startsWith("/")
+                          ? exercise.markdownPath
+                          : `/${exercise.markdownPath}`,
+                      solution: exercise.solution.startsWith("/") ? exercise.solution : `/${exercise.solution}`
+                  }))
+                : [];
 
             navigate(`/course/${moduleIndex}/${lessonIndex}`, {
                 state: {
@@ -76,15 +92,58 @@ const CourseStructure = ({ isOpen, onToggle }) => {
     };
 
     const courses = [
-        { title: 'OOP Design', icon: <FaCode className="text-2xl" /> },
-        { title: 'Database Design', icon: <FaDatabase className="text-2xl" /> },
-        { title: 'Cloud Design', icon: <FaCloud className="text-2xl" /> },
-        { title: 'Network Design', icon: <FaNetworkWired className="text-2xl" /> },
-        { title: 'Security Design', icon: <FaLock className="text-2xl" /> },
-        { title: 'Mobile App Design', icon: <FaMobileAlt className="text-2xl" /> },
+        { title: "OOA&D", icon: <FaProjectDiagram className="text-2xl" /> },
+        { title: "OOP Design", icon: <FaCode className="text-2xl" /> },
+        { title: "Database Design", icon: <FaDatabase className="text-2xl" /> },
+        { title: "Cloud Design", icon: <FaCloud className="text-2xl" /> },
+        { title: "Network Design", icon: <FaNetworkWired className="text-2xl" /> },
+        { title: "Security Design", icon: <FaLock className="text-2xl" /> },
+        { title: "Mobile App Design", icon: <FaMobileAlt className="text-2xl" /> }
     ];
 
     if (!isOpen) return null;
+
+    const renderCourseContent = () => {
+        if (selectedCourse === "OOP Design" && courseStructure) {
+            return renderModules(courseStructure);
+        } else if (selectedCourse === "OOA&D" && ooadCourseStructure) {
+            return renderModules(ooadCourseStructure);
+        }
+        return null;
+    };
+
+    const renderModules = (structure) => (
+        <div>
+            {structure.modules.map((module, moduleIndex) => (
+                <div key={moduleIndex} className="mb-2">
+                    <div
+                        className="flex justify-between items-center cursor-pointer hover:bg-blue-500 p-1 rounded"
+                        onClick={() => toggleModule(moduleIndex)}
+                    >
+                        <span className="flex items-center">
+                            <FaLightbulb className="text-yellow-300 mr-2" />
+                            {module.title}
+                        </span>
+                        {expandedModules[moduleIndex] ? <FaChevronDown /> : <FaChevronRight />}
+                    </div>
+                    {expandedModules[moduleIndex] && (
+                        <ul className="pl-4 mt-1">
+                            {module.lessons.map((lesson, lessonIndex) => (
+                                <li
+                                    key={lessonIndex}
+                                    className="hover:bg-blue-500 p-1 rounded flex items-center cursor-pointer"
+                                    onClick={() => handleLessonClick(moduleIndex, lessonIndex, structure)}
+                                >
+                                    <FaBook className="text-green-300 mr-2" />
+                                    {lesson.title}
+                                </li>
+                            ))}
+                        </ul>
+                    )}
+                </div>
+            ))}
+        </div>
+    );
 
     return (
         <div className="bg-blue-400 text-white p-2 w-80 flex flex-col h-full">
@@ -109,38 +168,7 @@ const CourseStructure = ({ isOpen, onToggle }) => {
                         />
                     ))}
                 </div>
-                {courseStructure && selectedCourse === 'OOP Design' && (
-                    <div>
-                        {courseStructure.modules.map((module, moduleIndex) => (
-                            <div key={moduleIndex} className="mb-2">
-                                <div
-                                    className="flex justify-between items-center cursor-pointer hover:bg-blue-500 p-1 rounded"
-                                    onClick={() => toggleModule(moduleIndex)}
-                                >
-                                    <span className="flex items-center">
-                                        <FaLightbulb className="text-yellow-300 mr-2" />
-                                        {module.title}
-                                    </span>
-                                    {expandedModules[moduleIndex] ? <FaChevronDown /> : <FaChevronRight />}
-                                </div>
-                                {expandedModules[moduleIndex] && (
-                                    <ul className="pl-4 mt-1">
-                                        {module.lessons.map((lesson, lessonIndex) => (
-                                            <li
-                                                key={lessonIndex}
-                                                className="hover:bg-blue-500 p-1 rounded flex items-center cursor-pointer"
-                                                onClick={() => handleLessonClick(moduleIndex, lessonIndex)}
-                                            >
-                                                <FaBook className="text-green-300 mr-2" />
-                                                {lesson.title}
-                                            </li>
-                                        ))}
-                                    </ul>
-                                )}
-                            </div>
-                        ))}
-                    </div>
-                )}
+                {renderCourseContent()}
             </div>
         </div>
     );
